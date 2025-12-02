@@ -88,11 +88,11 @@ Maak een `PublisherRequestDto` met de volgende validatie regels:
 
 Zorg er bij beide DTO's voor dat er ook een goede message gemaakt wordt.
 
-## Stap 4 (POM)
+## Stap 3 (POM)
 
 Voeg de validatie dependency toe aan je pom.xml.
 
-## Stap 5 (Mappers)
+## Stap 4 (Mappers)
 
 
 De mapper pakken we op een slimme manier aan door een algemene interface voor de mappers te maken.
@@ -123,7 +123,7 @@ Maak ook de `PublisherDTOMapper` waarin je de volgende methodes vanuit de interf
 
 Vergeet niet de juiste annotatie boven de Mapper klassen te zetten.
 
-## Stap 6 (Service) 
+## Stap 5 (Service) 
 
 Injecteer de `GenreDTOMapper` in de `GenreService` en injecteer de `PublisherDTOMapper` in de `PublisherService`.
 
