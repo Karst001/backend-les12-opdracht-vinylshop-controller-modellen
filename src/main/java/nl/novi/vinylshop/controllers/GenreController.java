@@ -1,6 +1,7 @@
 package nl.novi.vinylshop.controllers;
 
-import nl.novi.vinylshop.entities.GenreEntity;
+import nl.novi.vinylshop.dtos.genre.GenreRequestDTO;
+import nl.novi.vinylshop.dtos.genre.GenreResponseDTO;
 import nl.novi.vinylshop.helpers.UrlHelper;
 import nl.novi.vinylshop.services.GenreService;
 import org.springframework.http.HttpStatus;
@@ -24,36 +25,48 @@ public class GenreController {
 
     //mappings
     @GetMapping
-    public ResponseEntity<List<GenreEntity>> findAllGenres() {
-        List<GenreEntity> genres = genreService.findAllGenres();
+    public ResponseEntity<List<GenreResponseDTO>> findAllGenres() {
+        //load the DTO with all genres via the service
+        List<GenreResponseDTO> genres = genreService.findAllGenres();
+
+        //return the List
         return new ResponseEntity<>(genres, HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<GenreEntity> findGenreById(@PathVariable Long id) {
-        GenreEntity genre = genreService.findGenreById(id);
+    public ResponseEntity<GenreResponseDTO> findGenreById(@PathVariable Long id) {
+        //load the DTO with one genre via the service
+        GenreResponseDTO genre = genreService.findGenreById(id);
+
+        //return the found object or null
         if (genre != null) {  //prepare proper response, provided id may not exist
             return new ResponseEntity<>(genre, HttpStatus.OK);
         }
-        return new ResponseEntity<>(genre, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(null, HttpStatus.NOT_FOUND);
     }
 
 
     @PostMapping
-    public ResponseEntity<GenreEntity> createGenre(@RequestBody GenreEntity genreInput) {
-        GenreEntity newGenre = genreService.createGenre(genreInput);
+    public ResponseEntity<GenreResponseDTO> createGenre(@RequestBody GenreRequestDTO genreInput) {
+        //create a genre via the service and store result in ResponseDTO
+        GenreResponseDTO newGenre = genreService.createGenre(genreInput);
+
+        //return the new response and add Id to header
         return ResponseEntity.created(urlHelper.getCurrentUrlWithId(newGenre.getId())).body(newGenre);
     }
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<GenreEntity> updateGenre(@PathVariable Long id, @RequestBody GenreEntity genreInput) {
-        GenreEntity updated = genreService.updateGenre(id, genreInput);
+    public ResponseEntity<GenreResponseDTO> updateGenre(@PathVariable Long id, @RequestBody GenreRequestDTO genreInput) {
+        //update genre via the service and store result in ResponseDTO
+        GenreResponseDTO updated = genreService.updateGenre(id, genreInput);
+
+        //return the updated object or null
         if (updated != null) {  //prepare proper response, provided id may not exist
             return new ResponseEntity<>(updated, HttpStatus.OK);
         }
-        return new ResponseEntity<>(updated, HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(updated, HttpStatus.NOT_FOUND);
     }
 
 

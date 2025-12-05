@@ -1,7 +1,7 @@
 package nl.novi.vinylshop.controllers;
 
-
-import nl.novi.vinylshop.entities.PublisherEntity;
+import nl.novi.vinylshop.dtos.publisher.PublisherRequestDTO;
+import nl.novi.vinylshop.dtos.publisher.PublisherResponseDTO;
 import nl.novi.vinylshop.helpers.UrlHelper;
 import nl.novi.vinylshop.services.PublisherService;
 import org.springframework.http.HttpStatus;
@@ -24,15 +24,21 @@ public class PublisherController {
 
     //mappings
     @GetMapping
-    public ResponseEntity<List<PublisherEntity>> findAllPublishers() {
-        List<PublisherEntity> publishers = publisherService.findAllPublishers();
+    public ResponseEntity<List<PublisherResponseDTO>> findAllPublishers() {
+        //load the DTO with all publishers via the service
+        List<PublisherResponseDTO> publishers = publisherService.findAllPublishers();
+
+        //return the list
         return new ResponseEntity<>(publishers, HttpStatus.OK);
     }
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<PublisherEntity> findPublisherById(@PathVariable Long id) {
-        PublisherEntity publisher = publisherService.findPublisherById(id);
+    public ResponseEntity<PublisherResponseDTO> findPublisherById(@PathVariable Long id) {
+        //load the DTO with one publisher via the service
+        PublisherResponseDTO publisher = publisherService.findPublisherById(id);
+
+        //return the found object or null
         if (publisher != null) {  //prepare proper response, provided id may not exist
             return new ResponseEntity<>(publisher, HttpStatus.OK);
         }
@@ -41,14 +47,20 @@ public class PublisherController {
 
 
     @PostMapping
-    public ResponseEntity<PublisherEntity> createPublisher(@RequestBody PublisherEntity publisherInput) {
-        PublisherEntity newPublisher = publisherService.createPublisher(publisherInput);
+    public ResponseEntity<PublisherResponseDTO> createPublisher(@RequestBody PublisherRequestDTO publisherInput) {
+        //create a publisher via the service and store result in ResponseDTO
+        PublisherResponseDTO newPublisher = publisherService.createPublisher(publisherInput);
+
+        //return the new response and add Id to header
         return ResponseEntity.created(urlHelper.getCurrentUrlWithId(newPublisher.getId())).body(newPublisher);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PublisherEntity> updatePubliser(@PathVariable Long id, @RequestBody PublisherEntity publisherInput) {
-        PublisherEntity updated = publisherService.updatePublisher(id, publisherInput);
+    public ResponseEntity<PublisherResponseDTO> updatePubliser(@PathVariable Long id, @RequestBody PublisherRequestDTO publisherInput) {
+        //update publisher via the service and store result in ResponseDTO
+        PublisherResponseDTO updated = publisherService.updatePublisher(id, publisherInput);
+
+        //return the updated object or null
         if (updated != null) { //prepare proper response, provided id may not exist
             return new ResponseEntity<>(updated, HttpStatus.ACCEPTED);
         }

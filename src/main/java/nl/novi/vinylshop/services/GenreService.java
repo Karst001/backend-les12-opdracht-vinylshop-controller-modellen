@@ -1,6 +1,9 @@
 package nl.novi.vinylshop.services;
 
+import nl.novi.vinylshop.dtos.genre.GenreRequestDTO;
+import nl.novi.vinylshop.dtos.genre.GenreResponseDTO;
 import nl.novi.vinylshop.entities.GenreEntity;
+import nl.novi.vinylshop.mappers.GenreDTOMapper;
 import nl.novi.vinylshop.repositories.GenreRepository;
 import org.springframework.stereotype.Service;
 
@@ -9,40 +12,63 @@ import java.util.Optional;
 
 @Service
 public class GenreService {
+    //dependency injections
     private final GenreRepository genreRepository;
+    private final GenreDTOMapper genreDTOMapper;
 
-    public GenreService(GenreRepository genreRepository) {
+    public GenreService(GenreRepository genreRepository, GenreDTOMapper genreDTOMapper) {
+        //instantiate
         this.genreRepository = genreRepository;
+        this.genreDTOMapper = genreDTOMapper;
     }
 
-    public List<GenreEntity> findAllGenres() {
-        return genreRepository.findAll();
+
+    public List<GenreResponseDTO> findAllGenres() {
+        //return the GenreResponseDTO via the DTO mapper to the controller
+        return genreDTOMapper.mapToDto(genreRepository.findAll());
+
+        //optional
+        //return genreDTOMapper.mapToDto(genreRepository.findAllByOrderByIdAsc());  return the data sorted as Jpa doesn't do that by default
+        //in the GenreRepository there is a custom function added
     }
 
-    public GenreEntity findGenreById(Long id) {
-        GenreEntity result = getGenreById(id);
+    public GenreResponseDTO findGenreById(Long id) {
+        //check if records exists
+        GenreEntity result = getGenreEntityById(id);  //this step can be skipped when using stored procedures
 
+        //return the entity via the mapper
         if (result != null) {
-            return genreRepository.findById(id).orElse(null);
+            return genreDTOMapper.mapToDto(result);
         }
         return null;
     }
 
-    public GenreEntity createGenre(GenreEntity genre) {
-        return genreRepository.save(genre);
+
+    public GenreResponseDTO createGenre(GenreRequestDTO genreDTO) {
+        //map the genreDTO to the genreEntity
+        GenreEntity result = genreDTOMapper.mapToEntity(genreDTO);
+
+        //call the repo and save the result
+        result = genreRepository.save(result);
+
+        //return the genreEntity via the DTO mapper to the controller
+        return genreDTOMapper.mapToDto(result);
     }
 
-    public GenreEntity updateGenre(Long id, GenreEntity genre) {
-        GenreEntity result = (getGenreById(id));
-        if (result != null) {
-            // Update fields only, not the id
-            result.setName(genre.getName());
-            result.setDescription(genre.getDescription());
 
-            //save to database
-            return genreRepository.save(result);
-        }
-        return null;
+    public GenreResponseDTO updateGenre(Long id, GenreRequestDTO requestDto) {
+        //check if records exists
+        GenreEntity result = getGenreEntityById(id);  //this step can be skipped when using stored procedures
+
+        //update values
+        result.setName(requestDto.getName());
+        result.setDescription(requestDto.getDescription());
+
+        //save to database
+        result = genreRepository.save(result);
+
+        //return entity to controller via de DTO
+        return genreDTOMapper.mapToDto(result);
     }
 
 
@@ -52,6 +78,7 @@ public class GenreService {
 
 
     //private function to check if record exists
+    //this function can be skipped when using stored procedures
     private GenreEntity getGenreById(Long id) {
         // First check if record exists in database
         Optional<GenreEntity> genreEntityOptional = genreRepository.findById(id);
@@ -61,5 +88,14 @@ public class GenreService {
         } else {
             return null;
         }
+    }
+
+    //private function to check if entity exists
+    private GenreEntity getGenreEntityById(Long id) {
+        GenreEntity genreEntity = genreRepository.findById(id).orElse(null);
+        return genreEntity;
+
+        //or inline:
+        //return genreRepository.findById(id).orElse(null);
     }
 }
