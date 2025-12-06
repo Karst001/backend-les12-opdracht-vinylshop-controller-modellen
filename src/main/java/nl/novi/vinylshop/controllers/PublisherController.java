@@ -1,5 +1,6 @@
 package nl.novi.vinylshop.controllers;
 
+import jakarta.validation.Valid;
 import nl.novi.vinylshop.dtos.publisher.PublisherRequestDTO;
 import nl.novi.vinylshop.dtos.publisher.PublisherResponseDTO;
 import nl.novi.vinylshop.helpers.UrlHelper;
@@ -47,7 +48,7 @@ public class PublisherController {
 
 
     @PostMapping
-    public ResponseEntity<PublisherResponseDTO> createPublisher(@RequestBody PublisherRequestDTO publisherInput) {
+    public ResponseEntity<PublisherResponseDTO> createPublisher(@Valid @RequestBody PublisherRequestDTO publisherInput) {
         //create a publisher via the service and store result in ResponseDTO
         PublisherResponseDTO newPublisher = publisherService.createPublisher(publisherInput);
 
@@ -56,7 +57,7 @@ public class PublisherController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<PublisherResponseDTO> updatePubliser(@PathVariable Long id, @RequestBody PublisherRequestDTO publisherInput) {
+    public ResponseEntity<PublisherResponseDTO> updatePubliser(@PathVariable Long id, @Valid @RequestBody PublisherRequestDTO publisherInput) {
         //update publisher via the service and store result in ResponseDTO
         PublisherResponseDTO updated = publisherService.updatePublisher(id, publisherInput);
 

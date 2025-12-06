@@ -77,25 +77,18 @@ public class GenreService {
     }
 
 
-    //private function to check if record exists
-    //this function can be skipped when using stored procedures
-    private GenreEntity getGenreById(Long id) {
-        // First check if record exists in database
-        Optional<GenreEntity> genreEntityOptional = genreRepository.findById(id);
-
-        if(genreEntityOptional.isPresent()){
-            return genreEntityOptional.get();  //return the found Entity
-        } else {
-            return null;
-        }
-    }
-
     //private function to check if entity exists
     private GenreEntity getGenreEntityById(Long id) {
-        GenreEntity genreEntity = genreRepository.findById(id).orElse(null);
-        return genreEntity;
+        Optional<GenreEntity> genreEntity = genreRepository.findById(id);
 
-        //or inline:
-        //return genreRepository.findById(id).orElse(null);
+        //check if Genre is present, if not return null
+        return genreEntity.orElse(null);
+
+        //or write as
+        //        if(genreEntity.isPresent()){
+        //            return genreEntity.get();
+        //        } else {
+        //            return null;
+        //        }
     }
 }

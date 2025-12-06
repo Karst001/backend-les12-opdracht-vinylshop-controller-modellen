@@ -1,18 +1,14 @@
 package nl.novi.vinylshop.services;
 
-import nl.novi.vinylshop.dtos.genre.GenreRequestDTO;
-import nl.novi.vinylshop.dtos.genre.GenreResponseDTO;
 import nl.novi.vinylshop.dtos.publisher.PublisherRequestDTO;
 import nl.novi.vinylshop.dtos.publisher.PublisherResponseDTO;
-import nl.novi.vinylshop.entities.BaseEntity;
-import nl.novi.vinylshop.entities.GenreEntity;
 import nl.novi.vinylshop.entities.PublisherEntity;
-import nl.novi.vinylshop.mappers.DTOMapperInterface;
 import nl.novi.vinylshop.mappers.PublisherDTOMapper;
 import nl.novi.vinylshop.repositories.PublisherRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PublisherService {
@@ -35,10 +31,9 @@ public class PublisherService {
 
     public PublisherResponseDTO findPublisherById(Long id) {
         //check if records exists
-        PublisherEntity result = getPublisherById(id);   //this step can be skipped when using stored procedures
+        PublisherEntity result = getPublisherEntityById(id);   //this step can be skipped when using stored procedures
 
         if (result != null) {
-            DTOMapperInterface<Object, Object, BaseEntity> publisherDtoMapper;
             return publisherDTOMapper.mapToDto(result);
         }
         return null;
@@ -80,26 +75,18 @@ public class PublisherService {
     }
 
 
-    //private function to check if record exists
-    //this function can be skipped when using stored procedures
-    private PublisherEntity getPublisherById(Long id) {
-        // First check if record exists in database
-        PublisherEntity existing = publisherRepository.findById(id).orElse(null);
-
-        if (existing == null) {
-            // record not found
-            return null;
-        }
-        return existing;    //return the found Entity
-    }
-
-
     //private function to check if entity exists
     private PublisherEntity getPublisherEntityById(Long id) {
-        PublisherEntity publisherEntity = publisherRepository.findById(id).orElse(null);
-        return publisherEntity;
+        Optional<PublisherEntity> publisherEntity = publisherRepository.findById(id);
 
-        //or inline:
-        //return publisherRepository.findById(id).orElse(null);
+        //check if Genre is present, if not return null
+        return publisherEntity.orElse(null);
+
+        //or write as
+        //        if(publisherEntity.isPresent()){
+        //            return publisherEntity.get();
+        //        } else {
+        //            return null;
+        //        }
     }
 }

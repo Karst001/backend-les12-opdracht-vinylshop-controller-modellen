@@ -1,5 +1,6 @@
 package nl.novi.vinylshop.controllers;
 
+import jakarta.validation.Valid;
 import nl.novi.vinylshop.dtos.genre.GenreRequestDTO;
 import nl.novi.vinylshop.dtos.genre.GenreResponseDTO;
 import nl.novi.vinylshop.helpers.UrlHelper;
@@ -7,8 +8,8 @@ import nl.novi.vinylshop.services.GenreService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
 import java.util.List;
+
 
 
 @RestController
@@ -48,7 +49,9 @@ public class GenreController {
 
 
     @PostMapping
-    public ResponseEntity<GenreResponseDTO> createGenre(@RequestBody GenreRequestDTO genreInput) {
+    public ResponseEntity<GenreResponseDTO> createGenre(@Valid @RequestBody GenreRequestDTO genreInput) {
+        //@Valid triggers the validation process before data is processed the service layer
+
         //create a genre via the service and store result in ResponseDTO
         GenreResponseDTO newGenre = genreService.createGenre(genreInput);
 
@@ -58,7 +61,9 @@ public class GenreController {
 
 
     @PutMapping("/{id}")
-    public ResponseEntity<GenreResponseDTO> updateGenre(@PathVariable Long id, @RequestBody GenreRequestDTO genreInput) {
+    public ResponseEntity<GenreResponseDTO> updateGenre(@PathVariable Long id, @Valid @RequestBody GenreRequestDTO genreInput) {
+        //@Valid triggers the validation process before data is processed the service layer
+
         //update genre via the service and store result in ResponseDTO
         GenreResponseDTO updated = genreService.updateGenre(id, genreInput);
 
@@ -76,3 +81,5 @@ public class GenreController {
         return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }
+
+

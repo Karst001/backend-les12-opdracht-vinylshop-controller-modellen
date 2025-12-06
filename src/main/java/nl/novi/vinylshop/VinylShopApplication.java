@@ -9,5 +9,4 @@ public class VinylShopApplication {
     public static void main(String[] args) {
         SpringApplication.run(VinylShopApplication.class, args);
     }
-
 }
